@@ -1,0 +1,16 @@
+http:
+  listner:
+    host : "0.0.0.0"
+    port : "8081"
+   
+  requester:
+    memberSystemApi:
+      host : "member-sapi-app-v1-v1-8august.us-e2.cloudhub.io"
+      port : ""
+      pathMember : "/api/members"
+      pathMemberSync : "api/members/sync"
+  
+      
+    
+api:
+  instanceId: "17155825"

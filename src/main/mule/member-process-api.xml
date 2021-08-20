@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <flow name="member-process-api-main">
+        <http:listener path="/api/*" config-ref="member-process-api-httpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="member-process-api-config"/>
+        <error-handler ref="apiKit_Error_Handler">
+            </error-handler>
+    </flow>
+    <flow name="member-process-api-console">
+        <http:listener path="/console/*" config-ref="member-process-api-httpListenerConfig">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="member-process-api-config"/>
+        <error-handler ref="apiKit_Error_Handler">
+            </error-handler>
+    </flow>
+    <flow name="patch:\members\(memberId):application\json:member-process-api-config">
+		<logger level="INFO" doc:name="Logger" doc:id="1f6d4f23-9969-40c8-a8e5-4b73198d8612" message="Request Receieved for Patch member update PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="Flow Reference" doc:id="adcbb8e9-e661-499c-a97e-974c959aa946" name="patch-member-update-implementation"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3c2fe97a-27da-4a06-8b99-4c6233688deb" message="Response Sent for Patch member update PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<error-handler ref="process_Error_Handler" />
+    </flow>
+    <flow name="get:\members:member-process-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="803881e0-d742-4fd4-9f84-d035a7328687" message="Request Receieved for Get member List PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ebff67dc-fef7-4f39-9bec-9fc6b71f2e7c" name="get-members-list-implementation"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c30152c1-2a6f-47f3-a884-6d7e17453eca" message="Response Sent for Get member List PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+    </flow>
+    <flow name="get:\members\(memberId):member-process-api-config">
+		<logger level="INFO" doc:name="Logger" doc:id="505227ec-93ed-403d-a14b-874015e0712f" message="Request Receieved for Get member details PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="Flow Reference" doc:id="04550f00-81bf-46b6-901f-0f8704e0c59f" name="get-members-memberid-details-implementation"/>
+		<logger level="INFO" doc:name="Logger" doc:id="c42a15b0-72b8-480c-aa27-48b72f80945a" message="Response Sent for Get member details PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<error-handler ref="process_Error_Handler" />
+    </flow>
+    <flow name="post:\members:application\json:member-process-api-config">
+		<logger level="INFO" doc:name="Logger" doc:id="d592411f-cb76-4107-99f6-b58c8016699d" message="Request Receieved for Post member Registration PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<flow-ref doc:name="Flow Reference" doc:id="ab1c547f-d4e8-4bea-a426-45b9e27b9145" name="post-members-registration-implementation"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b1a2d0fd-8151-494a-8f7b-d87620a3d434" message="Response Sent for Post member Registration PAPI for transactionId: #[vars.requestHeader.'X-Cms-TransactionId']"/>
+		<error-handler ref="process_Error_Handler" />
+    </flow>
+</mule>

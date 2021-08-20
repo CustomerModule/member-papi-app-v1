@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<sub-flow name="get-members-list-implementation" doc:id="b00807d4-d6c8-447a-a67b-d50ed111e8b0" >
+		<http:request method="GET" doc:name="Request-get member system api" doc:id="8ee15e6f-513f-4b8c-8939-e685c9bcd609" config-ref="Member-Papi-HTTP_Request_configuration" path="${http.requester.memberSystemApi.pathMember}">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-Cms-Channel" : attributes.headers.'X-Cms-Channel',
+	"X-Cms-ClientSecret" : attributes.headers.'X-Cms-ClientSecret',
+	"X-Cms-TransactionId" : attributes.headers.'X-Cms-TransactionId',
+	"X-Cms-OriginLanguage" : attributes.headers.'X-Cms-OriginLanguage',
+	"X-Cms-OriginMarket" : attributes.headers.'X-Cms-OriginMarket',
+	"X-Cms-ClientId" : attributes.headers.'X-Cms-ClientId'
+}]]]></http:headers>
+		</http:request>
+		
+	</sub-flow>
+</mule>

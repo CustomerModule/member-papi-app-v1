@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="scheduler-member-sync-papiFlow" doc:id="abcdd255-143e-4e11-b1c5-342d4026c48a" >
+		<scheduler doc:name="Scheduler" doc:id="ba2aec84-cac1-4f15-923e-f863b6260b4f" >
+			<scheduling-strategy >
+				<fixed-frequency frequency="2" timeUnit="MINUTES"/>
+			</scheduling-strategy>
+		</scheduler>
+		<http:request method="GET" doc:name="get member list system api call" doc:id="82fe5212-29e3-4e33-a116-b571ae5b75a0" config-ref="Member-Papi-HTTP_Request_configuration" path="${http.requester.memberSystemApi.pathMember}" >
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-Cms-Channel" : "Mobile",
+	"X-Cms-ClientSecret" : "9d2C235e5D9C468f8Aca8a1B9DC834D8",
+	"X-Cms-TransactionId" : "2468b549-fd7d-4a42-bab1-c824d83f884a",
+	"X-Cms-OriginLanguage" : "en",
+	"X-Cms-OriginMarket" : "India",
+	"X-Cms-ClientId" : "c00b77d898e346768a6ab6cfbaae175a"
+}]]]></http:headers>
+		</http:request>
+		<parallel-foreach doc:name="Parallel For Each" doc:id="fa4f679d-55e2-40f9-95af-ee8b9c3d38a6" collection="#[payload.memberList]" maxConcurrency="5">
+			<http:request method="POST" doc:name="post member-sync system api call" doc:id="775ece0e-484f-4c38-b1df-1d27fa8bcf99" config-ref="Member-Papi-HTTP_Request_configuration" path="${http.requester.memberSystemApi.pathMemberSync}">
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"X-Cms-Channel" : "Mobile",
+	"X-Cms-ClientSecret" : "9d2C235e5D9C468f8Aca8a1B9DC834D8",
+	"X-Cms-TransactionId" : "2468b549-fd7d-4a42-bab1-c824d83f884a",
+	"X-Cms-OriginLanguage" : "en",
+	"X-Cms-OriginMarket" : "India",
+	"X-Cms-ClientId" : "c00b77d898e346768a6ab6cfbaae175a"
+}]]]></http:headers>
+			</http:request>
+		</parallel-foreach>
+	</flow>
+</mule>

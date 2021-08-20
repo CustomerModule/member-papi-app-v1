@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="process_Error_Handler" doc:id="bb7333c6-d538-4220-b06c-6c9fe4bd4454" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="aefd5709-0bc9-439f-a4e1-a8bbb4a89dcb" type="HTTP:TIMEOUT">
+			<ee:transform doc:name="Transform Message" doc:id="4425b08d-d09f-4f57-9fda-32a093cdbbe6" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 500,
+		success: false,
+		error: 
+  {
+				'type': "SERVER_ERROR",
+				title: "Internal server error",
+				details: "The server encountered an unexpected condition which prevented it from fulfilling the request"
+
+			  }
+  }
+]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[504]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4bf35fbe-2f10-4036-8e02-63aef026b89a" >
+			<ee:transform doc:name="Transform Message" doc:id="e54651a7-1210-414d-84f3-0714cd19f94e" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 500,
+		success: false,
+		error: 
+  {
+				'type': "SERVER_ERROR",
+				title: "Internal server error",
+				details: "The server encountered an unexpected condition which prevented it from fulfilling the request"
+
+			  }
+  }
+]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</on-error-continue>
+	</error-handler>
+	<error-handler name="apiKit_Error_Handler" doc:id="7a0125a6-f20c-4f8e-8330-a531c70d08a4" >
+	<on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 400,
+		success: false,
+		error: 
+  {
+				'type': "BAD_REQUEST",
+				title: "Invalid Request",
+				details: "The input contains invalid data"
+
+			  }
+  }
+]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[400]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 404,
+		success: false,
+		error: 
+  {
+				'type': "NOT_FOUND",
+				title: "Resource not found",
+				details: "The URI requested is invalid or the resource requested does not exists"
+
+			  }
+  }
+]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[404]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 405,
+		success: false,
+		error: 
+  {
+				'type': "Method not allowed",
+				title: "Method not allowed",
+				details: "Method not allowed"
+
+			  }
+  }
+]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[405]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 406,
+		success: false,
+		error: 
+  {
+				'type': "Not Acceptable",
+				title: "APIKIT: Not Acceptable",
+				details: "APIKIT:Not Acceptable"
+
+			  }
+  }]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[406]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 415,
+		success: false,
+		error: 
+  {
+				'type': "Unsupported Media Type",
+				title: "APIKIT: Unsupported Media Type",
+				details: "APIKIT:Unsupported Media Type"
+
+			  }
+  }]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[415]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 501,
+		success: false,
+		error: 
+  {
+				'type': "Not Implemented",
+				title: "APIKIT: Not Implemented",
+				details: "APIKIT:Not Implemented"
+
+			  }
+  }]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="43899ee6-7c44-43d4-aa7d-31126597032e" type="ANY">
+			<ee:transform doc:name="Transform Message" doc:id="e2335ea9-c508-40a4-ba01-4a9df64760d4" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+		msg: "failed operation",
+		code: 500,
+		success: false,
+		error: 
+  {
+				'type': "SERVER_ERROR",
+				title: "Internal server error",
+				details: "The server encountered an unexpected condition which prevented it from fulfilling the request"
+
+			  }
+  }]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+            
+</error-handler>
+	
+</mule>
